@@ -1,0 +1,95 @@
+Public Function Difference(Jun, AH, AI, AJ, AK)
+
+If IsError(AH) Then
+    If IsError(AI) Then
+        If IsError(AJ) Then
+            If IsError(AK) Then
+                Difference = "Not recorded"
+            ElseIf IsNumeric(AK) And AK <> 0 Then
+                Difference = Abs(Jun - AK)
+            Else
+                Difference = "Not recorded"
+            End If
+        ElseIf IsNumeric(AJ) And AJ <> 0 Then
+            Difference = Abs(Jun - AJ)
+        Else
+            If IsError(AK) Then
+                Difference = "Not recorded"
+            ElseIf IsNumeric(AK) And AK <> 0 Then
+                Difference = Abs(Jun - AK)
+            Else
+                Difference = "Not recorded"
+            End If
+        End If
+    ElseIf IsNumeric(AI) And AI <> 0 Then
+        Difference = Abs(Jun - AI)
+    Else
+        If IsError(AJ) Then
+            If IsError(AK) Then
+                Difference = "Not recorded"
+            ElseIf IsNumeric(AK) And AK <> 0 Then
+                Difference = Abs(Jun - AK)
+            Else
+                Difference = "Not recorded"
+            End If
+        ElseIf IsNumeric(AJ) And AJ <> 0 Then
+            Difference = Abs(Jun - AJ)
+        Else
+            If IsError(AK) Then
+                Difference = "Not recorded"
+            ElseIf IsNumeric(AK) And AK <> 0 Then
+                Difference = Abs(Jun - AK)
+            Else
+                Difference = "Not recorded"
+            End If
+        End If
+    End If
+ElseIf IsNumeric(AH) And AH <> 0 Then
+    Difference = Abs(Jun - AH)
+Else
+    If IsError(AI) Then
+        If IsError(AJ) Then
+            If IsError(AK) Then
+                Difference = "Not recorded"
+            ElseIf IsNumeric(AK) And AK <> 0 Then
+                Difference = Abs(Jun - AK)
+            Else
+                Difference = "Not recorded"
+            End If
+        ElseIf IsNumeric(AJ) And AJ <> 0 Then
+            Difference = Abs(Jun - AJ)
+        Else
+            If IsError(AK) Then
+                Difference = "Not recorded"
+            ElseIf IsNumeric(AK) And AK <> 0 Then
+                Difference = Abs(Jun - AK)
+            Else
+                Difference = "Not recorded"
+            End If
+        End If
+    ElseIf IsNumeric(AI) And AI <> 0 Then
+        Difference = Abs(Jun - AI)
+    Else
+        If IsError(AJ) Then
+            If IsError(AK) Then
+                Difference = "Not recorded"
+            ElseIf IsNumeric(AK) And AK <> 0 Then
+                Difference = Abs(Jun - AK)
+            Else
+                Difference = "Not recorded"
+            End If
+        ElseIf IsNumeric(AJ) And AJ <> 0 Then
+            Difference = Abs(Jun - AJ)
+        Else
+            If IsError(AK) Then
+                Difference = "Not recorded"
+            ElseIf IsNumeric(AK) And AK <> 0 Then
+                Difference = Abs(Jun - AK)
+            Else
+                Difference = "Not recorded"
+            End If
+        End If
+    End If
+End If
+
+End Function
