@@ -1,0 +1,42 @@
+Private Sub SortUserForm_Initialize()
+
+'Empty InputRange
+InputRange.Value = ""
+
+End Sub
+
+Private Sub AscendingCommandButton_Click()
+
+Dim AscendPosition As Integer
+Dim AscendValue As Double
+
+For AscendPosition = 1 To Range(InputRange.Value).Rows.Count
+
+    AscendValue = WorksheetFunction.Small(Range(InputRange.Value), AscendPosition)
+    
+    Range(TargetCell.Value).Offset(AscendPosition - 1, 0).Value = AscendValue
+
+Next AscendPosition
+
+End Sub
+
+Private Sub DescendingCommandButton_Click()
+
+Dim DescendPosition As Integer
+Dim DescendValue As Double
+
+For DescendPosition = 1 To Range(InputRange.Value).Rows.Count
+
+    DescendValue = WorksheetFunction.Large(Range(InputRange.Value), DescendPosition)
+    
+    Range(TargetCell.Value).Offset(DescendPosition - 1, 0).Value = DescendValue
+
+Next DescendPosition
+
+End Sub
+
+Private Sub FinishButton_Click()
+
+Unload Me
+
+End Sub
