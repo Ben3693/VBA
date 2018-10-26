@@ -1,0 +1,104 @@
+Sub Forecasts()
+
+    ' Indices for looping through sheets and rows
+    Dim SheetNumber As Integer
+    Dim RowNumber As Integer
+
+    ' Variables for storing values from VLOOKUPs
+    Dim AuditFee As String
+    Dim SterlingEquivalent As String
+    
+    ' Variable for storing name of current sheet
+    Dim SheetName As String
+    
+    ' Variant for InputBox
+    Dim StartingSheet As Variant
+    
+    
+    ' InputBox to input starting sheet (so that Summary sheet etc. are ignored)
+    StartingSheet = InputBox("Please enter the number of the first sheet to operate on:")
+    
+    ' Loop through sheets
+    For SheetNumber = StartingSheet To Worksheets.Count
+    
+        ' Displays current sheet
+        Sheets(SheetNumber).Select
+    
+        ' Extracts name of sheet
+        SheetName = Sheets(SheetNumber).Name
+        
+        ' Initially sets Count to total number of populated rows igoring blank rows inbetween
+        RowCount = Sheets(SheetNumber).UsedRange.Rows.Count
+        
+        ' Initial RowNumber set to 1 so that it will immediately increment to 2 so it ignores headers
+        RowNumber = 1
+        
+        Do While RowNumber < RowCount
+            
+            ' Increments to next row
+            RowNumber = RowNumber + 1
+        
+            ' If this row is blank, sets row count to this row
+            If IsEmpty(Cells(RowNumber, 1)) Then
+            
+                RowCount = RowNumber
+        
+            End If
+            
+        ' If as blank row has been found, RowCount will now equal RowNumber so the loop will end.
+        ' Otherwise, the loop will continue to the last populated row.
+        Loop
+        
+        ' If this is a DE sheet, the DE lookup will be used.
+        ' The check starts from 5th position so December sheets do not give a false positive.
+        If InStr(5, SheetName, "DE", vbTextCompare) Then
+        
+            ' Loops through rows, starting after headers until the row before a blank row
+            For RowNumber = 2 To (RowCount - 1)
+            
+                ' Enters VLookups in the correspondoing cells
+                Sheets(SheetNumber).Cells(RowNumber, 10).Formula = "=VLOOKUP($E" & RowNumber & ", [forecastingRawDump.xlsx]Sheet1!$C:$P, 11, FALSE)"
+                Sheets(SheetNumber).Cells(RowNumber, 12).Formula = "=VLOOKUP($E" & RowNumber & ", [forecastingRawDump.xlsx]Sheet1!$C:$P, 12, FALSE)"
+                
+                ' Extracts values from VLookups in cells
+                AuditFee = Sheets(SheetNumber).Cells(RowNumber, 10).Text
+                SterlingEquivalent = Sheets(SheetNumber).Cells(RowNumber, 12).Text
+        
+                ' Overwrites formulae with values
+                Sheets(SheetNumber).Cells(RowNumber, 10).Value = AuditFee
+                Sheets(SheetNumber).Cells(RowNumber, 12).Value = SterlingEquivalent
+                
+            ' Increments to next row
+            Next RowNumber
+        
+        ' If this is not a DE sheet, the general lookup is used
+        Else
+        
+            ' Loops through rows, starting after headers until the row before a blank row
+            For RowNumber = 2 To (RowCount - 1)
+            
+                ' Enters VLookups in the correspondoing cells
+                Sheets(SheetNumber).Cells(RowNumber, 10).Formula = "=VLOOKUP($E" & RowNumber & ", [forecastingRawDump.xlsx]Sheet1!$C:$P, 13, FALSE)"
+                Sheets(SheetNumber).Cells(RowNumber, 12).Formula = "=VLOOKUP($E" & RowNumber & ", [forecastingRawDump.xlsx]Sheet1!$C:$P, 14, FALSE)"
+                
+                ' Extracts values from VLookups in cells
+                AuditFee = Sheets(SheetNumber).Cells(RowNumber, 10).Text
+                SterlingEquivalent = Sheets(SheetNumber).Cells(RowNumber, 12).Text
+        
+                ' Overwrites formulae with values
+                Sheets(SheetNumber).Cells(RowNumber, 10).Value = AuditFee
+                Sheets(SheetNumber).Cells(RowNumber, 12).Value = SterlingEquivalent
+                
+            ' Increments to next row
+            Next RowNumber
+        
+        End If
+        
+    ' Increments to Next Sheet
+    Next SheetNumber
+    
+    ' Displays message when complete
+    MsgBox "Complete."
+
+End Sub
+
