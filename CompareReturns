@@ -1,0 +1,802 @@
+Sub CompareReturns()
+
+    Dim RowNumber As Integer
+    Dim ColumnNumber As Integer
+    Dim CurrentMonthExclusions As Integer
+    Dim PreviousMonthExclusions As Integer
+    Dim CurrentMonthValue As Double
+    Dim PreviousMonthValue As Double
+    Dim PercentageDifference As Double
+    
+    ' ***************
+    ' FIND EXCLUSIONS
+    ' ***************
+    
+    CurrentMonthExclusions = 0
+    PreviousMonthExclusions = 0
+    
+    RowNumber = 1
+    
+    ' Finds start of Exclusions Table
+    Do While Not Sheets(1).Range("A" & RowNumber).Text = "Exclusions"
+        
+        RowNumber = RowNumber + 1
+        
+    Loop
+    
+    ' Goes to next row
+    RowNumber = RowNumber + 1
+    
+    ' Finds next non-blank row
+    Do While IsEmpty(Sheets(1).Range("A" & RowNumber))
+        
+        RowNumber = RowNumber + 1
+    
+    Loop
+    
+    Do While IsNumeric(Sheets(1).Range("A" & RowNumber)) And Not IsEmpty(Sheets(1).Range("A" & RowNumber)) And Not Sheets(1).Range("A" & RowNumber).Text = "Generated publishing days"
+        
+        CurrentMonthExclusions = CurrentMonthExclusions + 1
+        RowNumber = RowNumber + 1
+    
+    Loop
+    
+    RowNumber = 1
+    
+    ' Finds start of Exclusions Table
+    Do While Not Sheets(2).Range("A" & RowNumber).Text = "Exclusions"
+        
+        RowNumber = RowNumber + 1
+        
+    Loop
+    
+    ' Goes to next row
+    RowNumber = RowNumber + 1
+    
+    ' Finds next non-blank row
+    Do While IsEmpty(Sheets(2).Range("A" & RowNumber))
+        
+        RowNumber = RowNumber + 1
+    
+    Loop
+    
+    Do While IsNumeric(Sheets(2).Range("A" & RowNumber)) And Not IsEmpty(Sheets(2).Range("A" & RowNumber)) And Not Sheets(2).Range("A" & RowNumber).Text = "Generated publishing days"
+        
+        PreviousMonthExclusions = PreviousMonthExclusions + 1
+        RowNumber = RowNumber + 1
+    
+    Loop
+    
+    ' ***************
+    ' COMPARE RETURNS
+    ' ***************
+    
+    ' Add comparison tables
+    Sheets(1).Range("G" & (48 + CurrentMonthExclusions) & ":K" & (64 + CurrentMonthExclusions)).Copy Sheets(1).Range("L" & (48 + CurrentMonthExclusions))
+    Sheets(1).Range("L" & (48 + CurrentMonthExclusions)).Formula = "Percentage difference (Average)"
+    Sheets(1).Range("G" & (68 + CurrentMonthExclusions) & ":K" & (84 + CurrentMonthExclusions)).Copy Sheets(1).Range("L" & (68 + CurrentMonthExclusions))
+    Sheets(1).Range("L" & (68 + CurrentMonthExclusions)).Formula = "Percentage difference (Average)"
+    Sheets(1).Range("G" & (88 + CurrentMonthExclusions) & ":K" & (104 + CurrentMonthExclusions)).Copy Sheets(1).Range("L" & (88 + CurrentMonthExclusions))
+    Sheets(1).Range("L" & (88 + CurrentMonthExclusions)).Formula = "Percentage difference (Average)"
+    Sheets(1).Range("G" & (108 + CurrentMonthExclusions) & ":K" & (124 + CurrentMonthExclusions)).Copy Sheets(1).Range("L" & (108 + CurrentMonthExclusions))
+    Sheets(1).Range("L" & (108 + CurrentMonthExclusions)).Formula = "Percentage difference (Average)"
+    Sheets(1).Range("G" & (128 + CurrentMonthExclusions) & ":K" & (144 + CurrentMonthExclusions)).Copy Sheets(1).Range("L" & (128 + CurrentMonthExclusions))
+    Sheets(1).Range("L" & (128 + CurrentMonthExclusions)).Formula = "Percentage difference (Average)"
+    Sheets(1).Range("G" & (147 + CurrentMonthExclusions) & ":K" & (162 + CurrentMonthExclusions)).Copy Sheets(1).Range("L" & (147 + CurrentMonthExclusions))
+    Sheets(1).Range("L" & (147 + CurrentMonthExclusions)).Formula = "Percentage difference (Average)"
+    
+    ' Do not include for Sunday papers
+    If Not Range("I35").Text = "Sunday" Then
+        
+        Sheets(1).Range("F" & (164 + CurrentMonthExclusions) & ":I" & (178 + CurrentMonthExclusions)).Copy Sheets(1).Range("J" & (164 + CurrentMonthExclusions))
+        Sheets(1).Range("J" & (164 + CurrentMonthExclusions)).Formula = "Percentage difference (Average)"
+        Sheets(1).Range("F" & (180 + CurrentMonthExclusions) & ":I" & (194 + CurrentMonthExclusions)).Copy Sheets(1).Range("J" & (180 + CurrentMonthExclusions))
+        Sheets(1).Range("J" & (180 + CurrentMonthExclusions)).Formula = "Percentage difference (Average)"
+        
+    End If
+    
+    Sheets(1).Range("B" & (202 + CurrentMonthExclusions) & ":E" & (216 + CurrentMonthExclusions)).Copy Sheets(1).Range("F" & (202 + CurrentMonthExclusions))
+    Sheets(1).Range("F" & (202 + CurrentMonthExclusions)).Formula = "Percentage difference (Average)"
+    Sheets(1).Range("F" & (218 + CurrentMonthExclusions)).Copy Sheets(1).Range("G" & (218 + CurrentMonthExclusions))
+    Sheets(1).Range("A" & (217 + CurrentMonthExclusions)).Copy Sheets(1).Range("G" & (217 + CurrentMonthExclusions))
+    Sheets(1).Range("G" & (217 + CurrentMonthExclusions)).Formula = "Percentage difference"
+    Sheets(1).Range("B" & (221 + CurrentMonthExclusions) & ":E" & (229 + CurrentMonthExclusions)).Copy Sheets(1).Range("F" & (221 + CurrentMonthExclusions))
+    Sheets(1).Range("F" & (221 + CurrentMonthExclusions)).Formula = "Percentage difference (UK)"
+    Sheets(1).Range("H" & (221 + CurrentMonthExclusions)).Formula = "Percentage difference (ROI)"
+    Sheets(1).Range("C" & (239 + CurrentMonthExclusions) & ":C" & (249 + CurrentMonthExclusions)).Copy Sheets(1).Range("D" & (239 + CurrentMonthExclusions))
+    Sheets(1).Range("D" & (239 + CurrentMonthExclusions)).Formula = "Percentage difference (Average)"
+    
+    ' Circulation for edition 1
+    ' Loop through rows
+    For RowNumber = 50 To 64
+    
+        ' Loop through columns
+        For ColumnNumber = 7 To 11
+            
+            ' Ignore non-numbers and blanks
+            If IsNumeric(Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber)) And Not Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Text = "" Then
+                
+                ' Get current and previous values
+                CurrentValue = Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Value
+                PreviousValue = Sheets(2).Cells(RowNumber + PreviousMonthExclusions, ColumnNumber).Value
+                
+                ' If values are the same, then difference is 0
+                If CurrentValue = PreviousValue Then
+                    
+                    PercentageDifference = 0
+                    
+                ' If only previous is 0 then have a ridiculous number instead of a #DIV/0
+                ElseIf PreviousValue = 0 Then
+                    
+                    PercentageDifference = 1.79769313486231E+308
+                
+                ' Otherwise calculate percentage difference
+                Else
+                    
+                    PercentageDifference = (CurrentValue - PreviousValue) / PreviousValue
+                    
+                End If
+                
+                ' Replace value on comparison sheet with percentage difference, ande format as percentage
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Value = PercentageDifference
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).NumberFormat = "0.0%"
+                
+                ' Format cell based on value
+                If Not PercentageDifference = 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.FontStyle = "Bold"
+                    
+                End If
+                
+                If PercentageDifference < 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.Color = vbRed
+                    
+                Else
+                
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.Color = vbBlack
+                
+                End If
+                
+            End If
+                
+        Next ColumnNumber
+    
+    Next RowNumber
+    
+    ' Circulation for edition 2
+    ' Loop through rows
+    For RowNumber = 70 To 84
+    
+        ' Loop through columns
+        For ColumnNumber = 7 To 11
+            
+            ' Ignore non-numbers and blanks
+            If IsNumeric(Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber)) And Not Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Text = "" Then
+                
+                ' Get current and previous values
+                CurrentValue = Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Value
+                PreviousValue = Sheets(2).Cells(RowNumber + PreviousMonthExclusions, ColumnNumber).Value
+                
+                ' If values are the same, then difference is 0
+                If CurrentValue = PreviousValue Then
+                    
+                    PercentageDifference = 0
+                    
+                ' If only previous is 0 then have a ridiculous number instead of a #DIV/0
+                ElseIf PreviousValue = 0 Then
+                    
+                    PercentageDifference = 1.79769313486231E+308
+                
+                ' Otherwise calculate percentage difference
+                Else
+                    
+                    PercentageDifference = (CurrentValue - PreviousValue) / PreviousValue
+                    
+                End If
+                
+                ' Replace value on comparison sheet with percentage difference, ande format as percentage
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Value = PercentageDifference
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).NumberFormat = "0.0%"
+                
+                ' Format cell based on value
+                If Not PercentageDifference = 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.FontStyle = "Bold"
+                    
+                End If
+                
+                If PercentageDifference < 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.Color = vbRed
+                    
+                Else
+                
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.Color = vbBlack
+                
+                End If
+                
+            End If
+            
+        Next ColumnNumber
+        
+    Next RowNumber
+    
+    ' Circulation for edition 3
+    ' Loop through rows
+    For RowNumber = 90 To 104
+    
+        ' Loop through columns
+        For ColumnNumber = 7 To 11
+            
+            ' Ignore non-numbers and blanks
+            If IsNumeric(Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber)) And Not Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Text = "" Then
+                
+                ' Get current and previous values
+                CurrentValue = Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Value
+                PreviousValue = Sheets(2).Cells(RowNumber + PreviousMonthExclusions, ColumnNumber).Value
+                
+                ' If values are the same, then difference is 0
+                If CurrentValue = PreviousValue Then
+                    
+                    PercentageDifference = 0
+                    
+                ' If only previous is 0 then have a ridiculous number instead of a #DIV/0
+                ElseIf PreviousValue = 0 Then
+                    
+                    PercentageDifference = 1.79769313486231E+308
+                
+                ' Otherwise calculate percentage difference
+                Else
+                    
+                    PercentageDifference = (CurrentValue - PreviousValue) / PreviousValue
+                    
+                End If
+                
+                ' Replace value on comparison sheet with percentage difference, ande format as percentage
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Value = PercentageDifference
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).NumberFormat = "0.0%"
+                
+                ' Format cell based on value
+                If Not PercentageDifference = 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.FontStyle = "Bold"
+                    
+                End If
+                
+                If PercentageDifference < 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.Color = vbRed
+                    
+                Else
+                
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.Color = vbBlack
+                
+                End If
+                
+            End If
+            
+        Next ColumnNumber
+        
+    Next RowNumber
+    
+    ' Circulation for edition 4
+    ' Loop through rows
+    For RowNumber = 110 To 124
+    
+        ' Loop through columns
+        For ColumnNumber = 7 To 11
+            
+            ' Ignore non-numbers and blanks
+            If IsNumeric(Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber)) And Not Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Text = "" Then
+                
+                ' Get current and previous values
+                CurrentValue = Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Value
+                PreviousValue = Sheets(2).Cells(RowNumber + PreviousMonthExclusions, ColumnNumber).Value
+                
+                ' If values are the same, then difference is 0
+                If CurrentValue = PreviousValue Then
+                    
+                    PercentageDifference = 0
+                    
+                ' If only previous is 0 then have a ridiculous number instead of a #DIV/0
+                ElseIf PreviousValue = 0 Then
+                    
+                    PercentageDifference = 1.79769313486231E+308
+                
+                ' Otherwise calculate percentage difference
+                Else
+                    
+                    PercentageDifference = (CurrentValue - PreviousValue) / PreviousValue
+                    
+                End If
+                
+                ' Replace value on comparison sheet with percentage difference, ande format as percentage
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Value = PercentageDifference
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).NumberFormat = "0.0%"
+                
+                ' Format cell based on value
+                If Not PercentageDifference = 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.FontStyle = "Bold"
+                    
+                End If
+                
+                If PercentageDifference < 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.Color = vbRed
+                    
+                Else
+                
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.Color = vbBlack
+                
+                End If
+                
+            End If
+            
+        Next ColumnNumber
+        
+    Next RowNumber
+    
+    ' Circulation for edition 5
+    ' Loop through rows
+    For RowNumber = 130 To 144
+    
+        ' Loop through columns
+        For ColumnNumber = 7 To 11
+            
+            ' Ignore non-numbers and blanks
+            If IsNumeric(Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber)) And Not Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Text = "" Then
+                
+                ' Get current and previous values
+                CurrentValue = Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Value
+                PreviousValue = Sheets(2).Cells(RowNumber + PreviousMonthExclusions, ColumnNumber).Value
+                
+                ' If values are the same, then difference is 0
+                If CurrentValue = PreviousValue Then
+                    
+                    PercentageDifference = 0
+                    
+                ' If only previous is 0 then have a ridiculous number instead of a #DIV/0
+                ElseIf PreviousValue = 0 Then
+                    
+                    PercentageDifference = 1.79769313486231E+308
+                
+                ' Otherwise calculate percentage difference
+                Else
+                    
+                    PercentageDifference = (CurrentValue - PreviousValue) / PreviousValue
+                    
+                End If
+                
+                ' Replace value on comparison sheet with percentage difference, ande format as percentage
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Value = PercentageDifference
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).NumberFormat = "0.0%"
+                
+                ' Format cell based on value
+                If Not PercentageDifference = 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.FontStyle = "Bold"
+                    
+                End If
+                
+                If PercentageDifference < 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.Color = vbRed
+                    
+                Else
+                
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.Color = vbBlack
+                
+                End If
+                
+            End If
+            
+        Next ColumnNumber
+        
+    Next RowNumber
+    
+    ' Total circulation table - For summary only
+    ' Loop through rows
+    For RowNumber = 149 To 162
+    
+        ' Loop through columns
+        For ColumnNumber = 7 To 11
+            
+            ' Ignore non-numbers and blanks
+            If IsNumeric(Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber)) And Not Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Text = "" Then
+                
+                ' Get current and previous values
+                CurrentValue = Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Value
+                PreviousValue = Sheets(2).Cells(RowNumber + PreviousMonthExclusions, ColumnNumber).Value
+                
+                ' If values are the same, then difference is 0
+                If CurrentValue = PreviousValue Then
+                    
+                    PercentageDifference = 0
+                    
+                ' If only previous is 0 then have a ridiculous number instead of a #DIV/0
+                ElseIf PreviousValue = 0 Then
+                    
+                    PercentageDifference = 1.79769313486231E+308
+                
+                ' Otherwise calculate percentage difference
+                Else
+                    
+                    PercentageDifference = (CurrentValue - PreviousValue) / PreviousValue
+                    
+                End If
+                
+                ' Replace value on comparison sheet with percentage difference, ande format as percentage
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Value = PercentageDifference
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).NumberFormat = "0.0%"
+                
+                ' Format cell based on value
+                If Not PercentageDifference = 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.FontStyle = "Bold"
+                    
+                End If
+                
+                If PercentageDifference < 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.Color = vbRed
+                    
+                Else
+                
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 5).Font.Color = vbBlack
+                
+                End If
+                
+            End If
+            
+        Next ColumnNumber
+        
+    Next RowNumber
+    
+    ' Do not include for Sunday papers
+    If Not Range("I35").Text = "Sunday" Then
+        
+        ' UK & ROI: Total circulation - Saturday tables - For entry
+        ' Loop through rows
+        For RowNumber = 166 To 178
+            
+            ' Loop through columns
+            For ColumnNumber = 6 To 9
+                
+                ' Ignore non-numbers and blanks
+                If IsNumeric(Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber)) And Not Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Text = "" Then
+                    
+                    ' Get current and previous values
+                    CurrentValue = Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Value
+                    PreviousValue = Sheets(2).Cells(RowNumber + PreviousMonthExclusions, ColumnNumber).Value
+                    
+                    ' If values are the same, then difference is 0
+                    If CurrentValue = PreviousValue Then
+                        
+                        PercentageDifference = 0
+                        
+                    ' If only previous is 0 then have a ridiculous number instead of a #DIV/0
+                    ElseIf PreviousValue = 0 Then
+                        
+                        PercentageDifference = 1.79769313486231E+308
+                        
+                    ' Otherwise calculate percentage difference
+                    Else
+                        
+                        PercentageDifference = (CurrentValue - PreviousValue) / PreviousValue
+                        
+                    End If
+                    
+                    ' Replace value on comparison sheet with percentage difference, ande format as percentage
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Value = PercentageDifference
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).NumberFormat = "0.0%"
+                    
+                    ' Format cell based on value
+                    If Not PercentageDifference = 0 Then
+                        
+                        Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Font.FontStyle = "Bold"
+                        
+                    End If
+                    
+                    If PercentageDifference < 0 Then
+                        
+                        Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Font.Color = vbRed
+                        
+                    Else
+                    
+                        Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Font.Color = vbBlack
+                        
+                    End If
+                    
+                End If
+                
+            Next ColumnNumber
+            
+        Next RowNumber
+        
+        ' UK & ROI: Total circulation - Monday to Friday - For summary only
+        ' Loop through rows
+        For RowNumber = 182 To 194
+            
+            ' Loop through columns
+            For ColumnNumber = 6 To 9
+                
+                ' Ignore non-numbers and blanks
+                If IsNumeric(Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber)) And Not Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Text = "" Then
+                    
+                    ' Get current and previous values
+                    CurrentValue = Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Value
+                    PreviousValue = Sheets(2).Cells(RowNumber + PreviousMonthExclusions, ColumnNumber).Value
+                    
+                    ' If values are the same, then difference is 0
+                    If CurrentValue = PreviousValue Then
+                        
+                        PercentageDifference = 0
+                        
+                    ' If only previous is 0 then have a ridiculous number instead of a #DIV/0
+                    ElseIf PreviousValue = 0 Then
+                        
+                        PercentageDifference = 1.79769313486231E+308
+                        
+                    ' Otherwise calculate percentage difference
+                    Else
+                        
+                        PercentageDifference = (CurrentValue - PreviousValue) / PreviousValue
+                        
+                    End If
+                    
+                    ' Replace value on comparison sheet with percentage difference, ande format as percentage
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Value = PercentageDifference
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).NumberFormat = "0.0%"
+                    
+                    ' Format cell based on value
+                    If Not PercentageDifference = 0 Then
+                        
+                        Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Font.FontStyle = "Bold"
+                        
+                    End If
+                    
+                    If PercentageDifference < 0 Then
+                        
+                        Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Font.Color = vbRed
+                        
+                    Else
+                        
+                        Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Font.Color = vbBlack
+                        
+                    End If
+                    
+                End If
+                
+            Next ColumnNumber
+            
+        Next RowNumber
+        
+    End If
+    
+    ' Total Digital Edition Averages
+    ' Loop through rows
+    For RowNumber = 204 To 216
+    
+        ' Loop through columns
+        For ColumnNumber = 2 To 5
+            
+            ' Ignore non-numbers and blanks
+            If IsNumeric(Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber)) And Not Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Text = "" Then
+                
+                ' Get current and previous values
+                CurrentValue = Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Value
+                PreviousValue = Sheets(2).Cells(RowNumber + PreviousMonthExclusions, ColumnNumber).Value
+                
+                ' If values are the same, then difference is 0
+                If CurrentValue = PreviousValue Then
+                    
+                    PercentageDifference = 0
+                    
+                ' If only previous is 0 then have a ridiculous number instead of a #DIV/0
+                ElseIf PreviousValue = 0 Then
+                    
+                    PercentageDifference = 1.79769313486231E+308
+                
+                ' Otherwise calculate percentage difference
+                Else
+                    
+                    PercentageDifference = (CurrentValue - PreviousValue) / PreviousValue
+                    
+                End If
+                
+                ' Replace value on comparison sheet with percentage difference, ande format as percentage
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Value = PercentageDifference
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).NumberFormat = "0.0%"
+                
+                ' Format cell based on value
+                If Not PercentageDifference = 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Font.FontStyle = "Bold"
+                    
+                End If
+                
+                If PercentageDifference < 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Font.Color = vbRed
+                    
+                Else
+                
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Font.Color = vbBlack
+                
+                End If
+                
+            End If
+            
+        Next ColumnNumber
+        
+    Next RowNumber
+    
+    ' Publication Active Views Average
+    RowNumber = 218
+    ColumnNumber = 6
+    
+    ' Ignore non-numbers and blanks
+    If IsNumeric(Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber)) And Not Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Text = "" Then
+        
+        ' Get current and previous values
+        CurrentValue = Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Value
+        PreviousValue = Sheets(2).Cells(RowNumber + PreviousMonthExclusions, ColumnNumber).Value
+        
+        ' If values are the same, then difference is 0
+        If CurrentValue = PreviousValue Then
+            
+            PercentageDifference = 0
+            
+        ' If only previous is 0 then have a ridiculous number instead of a #DIV/0
+        ElseIf PreviousValue = 0 Then
+            
+            PercentageDifference = 1.79769313486231E+308
+        
+        ' Otherwise calculate percentage difference
+        Else
+            
+            PercentageDifference = (CurrentValue - PreviousValue) / PreviousValue
+            
+        End If
+        
+        ' Replace value on comparison sheet with percentage difference, ande format as percentage
+        Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 1).Value = PercentageDifference
+        Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 1).NumberFormat = "0.0%"
+        
+        ' Format cell based on value
+        If Not PercentageDifference = 0 Then
+            
+            Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 1).Font.FontStyle = "Bold"
+            
+        End If
+        
+        If PercentageDifference < 0 Then
+            
+            Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 1).Font.Color = vbRed
+            
+        Else
+        
+            Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 1).Font.Color = vbBlack
+        
+        End If
+        
+    End If
+    
+    ' Basic Cover Prices
+    ' Loop through rows
+    For RowNumber = 223 To 229
+    
+        ' Loop through columns
+        For ColumnNumber = 2 To 5
+            
+            ' Ignore non-numbers and blanks
+            If IsNumeric(Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber)) And Not Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Text = "" Then
+                
+                ' Get current and previous values
+                CurrentValue = Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Value
+                PreviousValue = Sheets(2).Cells(RowNumber + PreviousMonthExclusions, ColumnNumber).Value
+                
+                ' If values are the same, then difference is 0
+                If CurrentValue = PreviousValue Then
+                    
+                    PercentageDifference = 0
+                    
+                ' If only previous is 0 then have a ridiculous number instead of a #DIV/0
+                ElseIf PreviousValue = 0 Then
+                    
+                    PercentageDifference = 1.79769313486231E+308
+                
+                ' Otherwise calculate percentage difference
+                Else
+                    
+                    PercentageDifference = (CurrentValue - PreviousValue) / PreviousValue
+                    
+                End If
+                
+                ' Replace value on comparison sheet with percentage difference, ande format as percentage
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Value = PercentageDifference
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).NumberFormat = "0.0%"
+                
+                ' Format cell based on value
+                If Not PercentageDifference = 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Font.FontStyle = "Bold"
+                    
+                End If
+                
+                If PercentageDifference < 0 Then
+                    
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Font.Color = vbRed
+                    
+                Else
+                
+                    Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 4).Font.Color = vbBlack
+                
+                End If
+                
+            End If
+                
+        Next ColumnNumber
+        
+    Next RowNumber
+    
+    ' Analysis of multiple copy sales
+    ' Loop through rows
+    For RowNumber = 240 To 249
+        
+        ColumnNumber = 3
+        
+        ' Ignore non-numbers and blanks
+        If IsNumeric(Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber)) And Not Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Text = "" Then
+            
+            ' Get current and previous values
+            CurrentValue = Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber).Value
+            PreviousValue = Sheets(2).Cells(RowNumber + PreviousMonthExclusions, ColumnNumber).Value
+            
+            ' If values are the same, then difference is 0
+            If CurrentValue = PreviousValue Then
+                
+                PercentageDifference = 0
+                
+            ' If only previous is 0 then have a ridiculous number instead of a #DIV/0
+            ElseIf PreviousValue = 0 Then
+                
+                PercentageDifference = 1.79769313486231E+308
+            
+            ' Otherwise calculate percentage difference
+            Else
+                
+                PercentageDifference = (CurrentValue - PreviousValue) / PreviousValue
+                
+            End If
+            
+            ' Replace value on comparison sheet with percentage difference, ande format as percentage
+            Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 1).Value = PercentageDifference
+            Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 1).NumberFormat = "0.0%"
+            
+            ' Format cell based on value
+            If Not PercentageDifference = 0 Then
+                
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 1).Font.FontStyle = "Bold"
+                
+            End If
+            
+            If PercentageDifference < 0 Then
+                
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 1).Font.Color = vbRed
+                
+            Else
+            
+                Sheets(1).Cells(RowNumber + CurrentMonthExclusions, ColumnNumber + 1).Font.Color = vbBlack
+            
+            End If
+            
+        End If
+    
+    Next RowNumber
+    
+    MsgBox "Comparison complete."
+    
+End Sub
