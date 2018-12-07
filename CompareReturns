@@ -336,6 +336,7 @@ Sub CompareReturns()
     Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                     TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                     PreviousMonthValue, PercentageDifference)
+    
     ' Do nothing if TableName was not found
     If Not CurrentMonthPosition = 0 Then
         
@@ -344,6 +345,26 @@ Sub CompareReturns()
             = "Percentage difference (UK)"
         Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + 2)).Formula _
             = "Percentage difference (ROI)"
+    
+    End If
+    
+    ' Basic annual rate for subscriptions
+    TableName = "Basic annual rate for subscriptions"
+    TableColumns = 3
+    TableColumnsStart = 2
+    TableRows = 4
+    TableRowsOffset = 3
+    
+    Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+                    TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
+                    PreviousMonthValue, PercentageDifference)
+    
+    ' Do nothing if TableName was not found
+    If Not CurrentMonthPosition = 0 Then
+        
+        ' Label tables
+        Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns)).Formula _
+            = "Percentage difference"
     
     End If
     
