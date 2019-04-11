@@ -49,9 +49,10 @@ Sub ComparisonTable(WorksheetNumber As Integer, RowNumber As Integer, ColumnNumb
             ' Loop through columns
             For ColumnNumber = TableColumnsStart To (TableColumnsStart + TableColumns - 1)
                 
-                ' Ignore non-numbers and blanks
+                ' Ignore non-numbers and blanks (only where blank on both sheets)
                 If IsNumeric(Worksheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber)) _
-                And Not Sheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber).Text = "" Then
+                And Not (Sheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber).Text = "" _
+                And Sheets(2).Cells(RowNumber + CurrentMonthPosition, ColumnNumber).Text = "") Then
                     
                     ' Get current and previous values
                     CurrentValue = Worksheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber).Value
