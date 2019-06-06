@@ -17,7 +17,7 @@ Private Function TablePosition(WorksheetNumber As Integer, TableName As String) 
 
 End Function
 
-Sub ComparisonTable(WorksheetNumber As Integer, RowNumber As Integer, ColumnNumber As Integer, _
+Sub ComparisonTables(WorksheetNumber As Integer, RowNumber As Integer, ColumnNumber As Integer, _
                     CurrentMonthPosition As Integer, PreviousMonthPosition As Integer, _
                     TableName As String, TableColumns As Integer, TableColumnsStart As Integer, _
                     TableRows As Integer, TableRowsOffset As Integer, CurrentMonthValue As Double, _
@@ -33,13 +33,20 @@ Sub ComparisonTable(WorksheetNumber As Integer, RowNumber As Integer, ColumnNumb
     ' Do nothing if TableName was not found
     If Not CurrentMonthPosition = 0 Then
         
-        ' Create comparison table
+        ' Create tables
         With Worksheets(1)
             
+            ' Percentage table
             .Range(.Cells((CurrentMonthPosition + 1), TableColumnsStart), _
                     .Cells((CurrentMonthPosition + TableRows), (TableColumnsStart + TableColumns - 1))).Copy _
                 (.Range(.Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns)), _
                         .Cells((CurrentMonthPosition + TableRows), (TableColumnsStart + TableColumns + TableColumns - 1))))
+            
+            ' Numerical table
+            .Range(.Cells((CurrentMonthPosition + 1), TableColumnsStart), _
+                    .Cells((CurrentMonthPosition + TableRows), (TableColumnsStart + TableColumns - 1))).Copy _
+                (.Range(.Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns)), _
+                        .Cells((CurrentMonthPosition + TableRows), (TableColumnsStart + TableColumns + TableColumns + TableColumns - 1))))
             
         End With
         
@@ -52,7 +59,7 @@ Sub ComparisonTable(WorksheetNumber As Integer, RowNumber As Integer, ColumnNumb
                 ' Ignore non-numbers and blanks (only where blank on both sheets)
                 If IsNumeric(Worksheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber)) _
                 And Not (Sheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber).Text = "" _
-                And Sheets(2).Cells(RowNumber + CurrentMonthPosition, ColumnNumber).Text = "") Then
+                And Sheets(2).Cells(RowNumber + PreviousMonthPosition, ColumnNumber).Text = "") Then
                     
                     ' Get current and previous values
                     CurrentValue = Worksheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber).Value
@@ -75,7 +82,7 @@ Sub ComparisonTable(WorksheetNumber As Integer, RowNumber As Integer, ColumnNumb
                         
                     End If
                     
-                    ' Replace value on comparison sheet with percentage difference, ande format as percentage
+                    ' Replace value in percentage table with percentage difference, and format as percentage
                     Worksheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber + TableColumns).Value = PercentageDifference
                     Worksheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber + TableColumns).NumberFormat = "0.0%"
                     
@@ -93,6 +100,38 @@ Sub ComparisonTable(WorksheetNumber As Integer, RowNumber As Integer, ColumnNumb
                     Else
                         
                         Worksheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber + TableColumns).Font.Color = vbBlack
+                        
+                    End If
+                    
+                    ' If PercentageDifference is 4% or greater, include numerical difference
+                    If Abs(PercentageDifference) >= 0.04 Then
+                        
+                        ' Replace value in numerical table with numerical difference
+                        Worksheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber + TableColumns + TableColumns).Value _
+                            = (CurrentValue - PreviousValue)
+                        
+                        ' Format cell based on value
+                        Worksheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber + TableColumns + TableColumns).Font.FontStyle _
+                            = "Bold"
+                        
+                        If PercentageDifference < 0 Then
+                            
+                            Worksheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber + TableColumns + TableColumns).Font.Color _
+                                = vbRed
+                            
+                        Else
+                            
+                            Worksheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber + TableColumns + TableColumns).Font.Color _
+                                = vbBlack
+                            
+                        End If
+                        
+                    ' If difference is less than 4%
+                    Else
+                        
+                        ' Leave blank
+                        Worksheets(1).Cells(RowNumber + CurrentMonthPosition, ColumnNumber + TableColumns + TableColumns).Formula _
+                            = ""
                         
                     End If
                     
@@ -129,16 +168,19 @@ Sub CompareReturns()
     TableRows = 17
     TableRowsOffset = 3
     
-    Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+    ' Run comparison
+    Call ComparisonTables(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                     TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                     PreviousMonthValue, PercentageDifference)
     
     ' Do nothing if TableName was not found
     If Not CurrentMonthPosition = 0 Then
         
-        ' Label table
+        ' Label tables
         Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns)).Formula _
             = "Percentage difference (Average)"
+        Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns)).Formula _
+            = "Numerical difference (if 4% or higher)"
         
     End If
     
@@ -150,16 +192,18 @@ Sub CompareReturns()
     TableRowsOffset = 3
     
     ' Run comparison
-    Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+    Call ComparisonTables(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                     TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                     PreviousMonthValue, PercentageDifference)
     
     ' Do nothing if TableName was not found
     If Not CurrentMonthPosition = 0 Then
         
-        ' Label table
+        ' Label tables
         Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns)).Formula _
             = "Percentage difference (Average)"
+        Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns)).Formula _
+            = "Numerical difference (if 4% or higher)"
         
     End If
     
@@ -170,16 +214,19 @@ Sub CompareReturns()
     TableRows = 17
     TableRowsOffset = 3
     
-    Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+    ' Run comparison
+    Call ComparisonTables(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                     TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                     PreviousMonthValue, PercentageDifference)
     
     ' Do nothing if TableName was not found
     If Not CurrentMonthPosition = 0 Then
         
-        ' Label table
+        ' Label tables
         Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns)).Formula _
             = "Percentage difference (Average)"
+        Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns)).Formula _
+            = "Numerical difference (if 4% or higher)"
         
     End If
     
@@ -190,16 +237,19 @@ Sub CompareReturns()
     TableRows = 17
     TableRowsOffset = 3
     
-    Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+    ' Run comparison
+    Call ComparisonTables(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                     TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                     PreviousMonthValue, PercentageDifference)
     
     ' Do nothing if TableName was not found
     If Not CurrentMonthPosition = 0 Then
         
-        ' Label table
+        ' Label tables
         Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns)).Formula _
             = "Percentage difference (Average)"
+        Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns)).Formula _
+            = "Numerical difference (if 4% or higher)"
         
     End If
     
@@ -210,16 +260,19 @@ Sub CompareReturns()
     TableRows = 17
     TableRowsOffset = 3
     
-    Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+    ' Run comparison
+    Call ComparisonTables(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                     TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                     PreviousMonthValue, PercentageDifference)
     
     ' Do nothing if TableName was not found
     If Not CurrentMonthPosition = 0 Then
         
-        ' Label table
+        ' Label tables
         Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns)).Formula _
             = "Percentage difference (Average)"
+        Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns)).Formula _
+            = "Numerical difference (if 4% or higher)"
         
     End If
     
@@ -230,16 +283,19 @@ Sub CompareReturns()
     TableRows = 16
     TableRowsOffset = 3
     
-    Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+    ' Run comparison
+    Call ComparisonTables(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                     TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                     PreviousMonthValue, PercentageDifference)
     
     ' Do nothing if TableName was not found
     If Not CurrentMonthPosition = 0 Then
         
-        ' Label table
+        ' Label tables
         Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns)).Formula _
             = "Percentage difference (Average)"
+        Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns)).Formula _
+            = "Numerical difference (if 4% or higher)"
         
     End If
     
@@ -252,19 +308,22 @@ Sub CompareReturns()
         TableRows = 15
         TableRowsOffset = 3
         
-        Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+        ' Run comparison
+        Call ComparisonTables(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                         TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                         PreviousMonthValue, PercentageDifference)
         
         ' Do nothing if TableName was not found
         If Not CurrentMonthPosition = 0 Then
             
-            ' Label table
+            ' Label tables
             Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns)).Formula _
                 = "Percentage difference (Average)"
+            Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns)).Formula _
+                = "Numerical difference (if 4% or higher)"
             
         End If
-        
+            
         ' UK & RoI: Total circulation - Monday to Friday - For summary only
         TableName = "UK & RoI: Total circulation - Monday to Friday - For summary only"
         TableColumns = 4
@@ -272,16 +331,19 @@ Sub CompareReturns()
         TableRows = 15
         TableRowsOffset = 3
         
-        Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+        ' Run comparison
+        Call ComparisonTables(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                         TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                         PreviousMonthValue, PercentageDifference)
-            
+        
         ' Do nothing if TableName was not found
         If Not CurrentMonthPosition = 0 Then
             
-            ' Label table
+            ' Label tables
             Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns)).Formula _
                 = "Percentage difference (Average)"
+            Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns)).Formula _
+                = "Numerical difference (if 4% or higher)"
             
         End If
         
@@ -294,16 +356,19 @@ Sub CompareReturns()
     TableRows = 15
     TableRowsOffset = 3
     
-    Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+    ' Run comparison
+    Call ComparisonTables(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                     TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                     PreviousMonthValue, PercentageDifference)
     
     ' Do nothing if TableName was not found
     If Not CurrentMonthPosition = 0 Then
         
-        ' Label table
+        ' Label tables
         Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns)).Formula _
             = "Percentage difference (Average)"
+        Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns)).Formula _
+            = "Numerical difference (if 4% or higher)"
         
     End If
     
@@ -314,16 +379,19 @@ Sub CompareReturns()
     TableRows = 2
     TableRowsOffset = 0
     
-    Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+    ' Run comparison
+    Call ComparisonTables(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                     TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                     PreviousMonthValue, PercentageDifference)
     
     ' Do nothing if TableName was not found
     If Not CurrentMonthPosition = 0 Then
         
-        ' Label table
+        ' Label tables
         Worksheets(1).Range("A" & CurrentMonthPosition).Copy Worksheets(1).Range("G" & CurrentMonthPosition)
         Worksheets(1).Range("G" & CurrentMonthPosition).Formula = "Percentage difference"
+        Worksheets(1).Range("A" & CurrentMonthPosition).Copy Worksheets(1).Range("H" & CurrentMonthPosition)
+        Worksheets(1).Range("H" & CurrentMonthPosition).Formula = "Numerical difference (if 4% or higher)"
         
     End If
     
@@ -334,7 +402,8 @@ Sub CompareReturns()
     TableRows = 9
     TableRowsOffset = 3
     
-    Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+    ' Run comparison
+    Call ComparisonTables(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                     TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                     PreviousMonthValue, PercentageDifference)
     
@@ -346,7 +415,11 @@ Sub CompareReturns()
             = "Percentage difference (UK)"
         Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + 2)).Formula _
             = "Percentage difference (ROI)"
-    
+        Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns)).Formula _
+            = "Numerical difference (UK, if 4% or higher)"
+        Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns + 2)).Formula _
+            = "Numerical difference (ROI, if 4% or higher)"
+        
     End If
     
     ' Basic annual rate for subscriptions
@@ -356,7 +429,8 @@ Sub CompareReturns()
     TableRows = 4
     TableRowsOffset = 3
     
-    Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+    ' Run comparison
+    Call ComparisonTables(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                     TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                     PreviousMonthValue, PercentageDifference)
     
@@ -366,7 +440,9 @@ Sub CompareReturns()
         ' Label tables
         Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns)).Formula _
             = "Percentage difference"
-    
+        Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns)).Formula _
+            = "Numerical difference (if 4% or higher)"
+        
     End If
     
     ' Analysis of multiple copy sales
@@ -376,16 +452,19 @@ Sub CompareReturns()
     TableRows = 11
     TableRowsOffset = 2
     
-    Call ComparisonTable(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
+    ' Run comparison
+    Call ComparisonTables(WorksheetNumber, RowNumber, ColumnNumber, CurrentMonthPosition, PreviousMonthPosition, _
                     TableName, TableColumns, TableColumnsStart, TableRows, TableRowsOffset, CurrentMonthValue, _
                     PreviousMonthValue, PercentageDifference)
     
     ' Do nothing if TableName was not found
     If Not CurrentMonthPosition = 0 Then
         
-        ' Label table
+        ' Label tables
         Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns)).Formula _
             = "Percentage difference (Average)"
+        Worksheets(1).Cells((CurrentMonthPosition + 1), (TableColumnsStart + TableColumns + TableColumns)).Formula _
+            = "Numerical difference (if 4% or higher)"
         
     End If
     
